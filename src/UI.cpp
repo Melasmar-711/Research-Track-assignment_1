@@ -167,6 +167,15 @@ int main(int argc , char **argv)
     Turtle turtle_2= Turtle(&nh,"turtle2",1,4,0);
     turtles.push_back(turtle_2);
 
+    struct turtle_attr
+    {
+        std::string name;
+        _Float32 x;
+        _Float32 y;
+        _Float32 theta;
+    }new_turtle ;
+    
+
     int choice=0;
     _Float32 speeds[2]={};
     int timer_to_move=0;
@@ -209,19 +218,28 @@ while(ros::ok()){
     turtles[choice-1].move_turtle(speeds[0],speeds[1],timer_to_move);
 
     }
+    else if(choice ==3){
+    std::cout<<"enter the name of the new turtle and x,y,theta :\n";
+    std::cin>>new_turtle.name>>new_turtle.x>>new_turtle.y>>new_turtle.theta;
 
+    Turtle new_turtle_=Turtle(&nh,new_turtle.name,new_turtle.x,new_turtle.y,new_turtle.theta);
+    turtles.push_back(new_turtle_);
+
+    }
+
+    }
 
 
     ros::spinOnce();
     loop_rate.sleep();
 
+return 0;
 
 }
 
 
 
 
-return 0;
 
 
 
@@ -229,4 +247,3 @@ return 0;
 
 
 
-}
