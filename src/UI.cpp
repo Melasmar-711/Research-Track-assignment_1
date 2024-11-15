@@ -34,13 +34,13 @@ public:
 
 
 std::string turtle_name;
-int x;
-int y;
-int theta;
+_Float32 x;
+_Float32 y;
+_Float32 theta;
 ros::NodeHandle *n;
 
 
-Turtle(ros::NodeHandle *n_,std::string name ,int x_pos ,int y_pos, int theta_){
+Turtle(ros::NodeHandle *n_,std::string name ,_Float32 x_pos ,_Float32 y_pos, _Float32 theta_){
 
 
 turtle_name=name;
@@ -160,7 +160,6 @@ int main(int argc , char **argv)
 
     ros::Rate loop_rate(10);
 
-
     std::vector<Turtle> turtles;
     Turtle turtle_1= Turtle(&nh,"turtle1",1,1,0);
     turtles.push_back(turtle_1);
@@ -176,6 +175,8 @@ int main(int argc , char **argv)
     }new_turtle ;
     
 
+
+
     int choice=0;
     _Float32 speeds[2]={};
     int timer_to_move=0;
@@ -185,7 +186,7 @@ int main(int argc , char **argv)
 while(ros::ok()){
 
 
-    std::cout<<"0-exit\n1-control turtle\n2-kill turtle\n";
+    std::cout<<"0-exit\n1-control turtle\n2-kill turtle\n3-add turtle\n";
     std::cin>>choice;
 
 
@@ -200,11 +201,17 @@ while(ros::ok()){
     that searches for the turtle by it's name this shall work given the user is careful what he writes*/    
     std::cout<<"which turtle to kill : ";
     std::cin>>choice;
-    turtles[choice-1].kill();
-    if (choice < turtles.size()){
-    turtles.erase(turtles.begin() + choice-2);
+        if (choice > 0 && choice <= turtles.size()) {
+                turtles[choice - 1].kill();
+                turtles.erase(turtles.begin() + choice - 1);
+            } else {
+                std::cerr << "Invalid turtle selection.\n";
+            }
+
     }
-    }
+    
+
+
 
 
 
@@ -213,25 +220,40 @@ while(ros::ok()){
     /*this will move the turtle of the number chosen */
     std::cout<<"which turtle to move : ";
     std::cin>>choice;
-    std::cout<<"write the linear velocity then the angular velocity at which the turtle should move:\n";
+    std::cout<<"Enter linear velocity &angular velocity & time to move:\n";
     std::cin>>speeds[0]>>speeds[1]>>timer_to_move;
     turtles[choice-1].move_turtle(speeds[0],speeds[1],timer_to_move);
 
     }
+
+
+
     else if(choice ==3){
     std::cout<<"enter the name of the new turtle and x,y,theta :\n";
     std::cin>>new_turtle.name>>new_turtle.x>>new_turtle.y>>new_turtle.theta;
 
-    Turtle new_turtle_=Turtle(&nh,new_turtle.name,new_turtle.x,new_turtle.y,new_turtle.theta);
-    turtles.push_back(new_turtle_);
+    //Turtle new_turtle_=Turtle();
+    turtles.emplace_back(&nh,new_turtle.name,new_turtle.x,new_turtle.y,new_turtle.theta);
 
     }
+        std::vector<std::string> turtle_names;
+        for (const auto& turtle : turtles) {
+            turtle_names.push_back(turtle.turtle_name);
+        }
+        nh.setParam("turtle_names", turtle_names);
 
-    }
+        ros::spinOnce();
+        loop_rate.sleep();
+
+
+    nh.setParam("turtle_names",turtle_names);
 
 
     ros::spinOnce();
     loop_rate.sleep();
+    }
+
+
 
 return 0;
 
