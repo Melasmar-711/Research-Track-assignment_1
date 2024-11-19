@@ -104,42 +104,55 @@ void Turtle::kill(){
 }
 
 /*this will move the turle for any amount of time the user chooses */
-void Turtle::move_turtle(_Float32 V_x ,_Float32 Theta_dot,int timer){
+void Turtle::move_turtle(_Float32 V_x, _Float32 Theta_dot, int timer) {
     std::string turtle_velocity_commander = "/" + turtle_name + "/cmd_vel";
 
-    ros::Publisher cmd_vel =n->advertise<geometry_msgs::Twist>(turtle_velocity_commander,10);
+    // Check if this turtle is allowed to move
+    bool is_allowed_to_move = true;
 
-
-
-    turtle_cmd_vel.linear.x=V_x;
-    turtle_cmd_vel.linear.y=0;
-    turtle_cmd_vel.linear.z=0;
-    turtle_cmd_vel.angular.x=0;
-    turtle_cmd_vel.angular.y=0;
-    turtle_cmd_vel.angular.z=Theta_dot;
+    ros::Publisher cmd_vel = n->advertise<geometry_msgs::Twist>(turtle_velocity_commander, 10);
     ros::Time start_time = ros::Time::now();
 
-   while(ros::ok()){ 
-
-    if ((ros::Time::now() - start_time).toSec() < timer) {
-            // Publish the velocity message for the first second
-
-            std::cout<<"this is what i am publishing and the topic is  \t"<<turtle_velocity_commander<<"\t"<<turtle_cmd_vel.linear.x<<"\n";
+    while (ros::ok()) {
+        n->getParam("/turtle_movement_status/" + turtle_name, is_allowed_to_move);
+        if ((ros::Time::now() - start_time).toSec() < timer && is_allowed_to_move) {
+            // Publish forward movement
+            turtle_cmd_vel.linear.x = V_x;
+            turtle_cmd_vel.angular.z = Theta_dot;
             cmd_vel.publish(turtle_cmd_vel);
+
         } 
+        
         else {
-            // After 1 second, stop the turtle by publishing zero velocity
-            turtle_cmd_vel.linear.x = 0.0;
-            turtle_cmd_vel.angular.z = 0.0;
+            // Turtle stopped due to distance controller or timer expiry
+            turtle_cmd_vel.linear.x = 0;
+            turtle_cmd_vel.angular.z = 0;
             cmd_vel.publish(turtle_cmd_vel);
-            break;  // Exit the loop after stopping the turtle
-        }    
-    
-    
 
-   }
+            if (!is_allowed_to_move) {
+                ROS_WARN("Turtle %s is stopped by the Distance Node.", turtle_name.c_str());
+
+                // Briefly reverse the turtle
+                turtle_cmd_vel.linear.x = -0.2*V_x;
+                turtle_cmd_vel.angular.z = -0.2*Theta_dot;  // Reverse speed
+                for (int i = 0; i < 10; i++) { // Publish for a short duration
+                    cmd_vel.publish(turtle_cmd_vel);
+                    ros::Duration(0.1).sleep();
+                }
+
+                // Stop completely
+                turtle_cmd_vel.linear.x = 0;
+                cmd_vel.publish(turtle_cmd_vel);
+
+                // Allow movement again after reversing
+                n->setParam("/turtle_movement_status/" + turtle_name, true);
+            }
+            break;
+        }
+
+        //ros::Duration(0.02).sleep(); // Small delay to allow publishing
+    }
 }
-
 
 
 
@@ -161,10 +174,25 @@ int main(int argc , char **argv)
     ros::Rate loop_rate(10);
 
     std::vector<Turtle> turtles;
-    Turtle turtle_1= Turtle(&nh,"turtle1",1,1,0);
+
+    
+    Turtle turtle_1= Turtle(&nh,"turtle1",4,4,0);
     turtles.push_back(turtle_1);
     Turtle turtle_2= Turtle(&nh,"turtle2",1,4,0);
     turtles.push_back(turtle_2);
+
+
+
+
+    std::vector<std::string> turtle_names;
+    for (const auto& turtle : turtles) {
+            turtle_names.push_back(turtle.turtle_name);
+    }
+    
+    
+    
+    nh.setParam("turtle_names", turtle_names);
+
 
     struct turtle_attr
     {
@@ -236,21 +264,23 @@ while(ros::ok()){
     turtles.emplace_back(&nh,new_turtle.name,new_turtle.x,new_turtle.y,new_turtle.theta);
 
     }
-        std::vector<std::string> turtle_names;
-        for (const auto& turtle : turtles) {
+
+
+
+    std::vector<std::string> turtle_names;
+    for (const auto& turtle : turtles) {
             turtle_names.push_back(turtle.turtle_name);
-        }
-        nh.setParam("turtle_names", turtle_names);
-
-        ros::spinOnce();
-        loop_rate.sleep();
-
-
-    nh.setParam("turtle_names",turtle_names);
+    }
+    
+    
+    
+    nh.setParam("turtle_names", turtle_names);
 
 
     ros::spinOnce();
     loop_rate.sleep();
+
+
     }
 
 
