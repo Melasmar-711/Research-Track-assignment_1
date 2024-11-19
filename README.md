@@ -6,12 +6,14 @@ This project provides a system for managing and controlling turtles in the ROS `
 
 ## **Overview**
 
+### **Staring point with two turtles** 
 ![rqt_graph](rosgraph.png)
 
-**you can choose to add as many turtles or remove any from the UI**
+### **You can choose to add as many turtles or remove any from the UI**
 ![rqt_graph](graph2.png)
+---
 ![rqt_graph](graph3.png)
-
+---
 ### **Nodes**
 1. **UI Node**
    - Allows users to interact with turtles through a terminal-based menu.
