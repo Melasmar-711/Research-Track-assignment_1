@@ -1,7 +1,0 @@
-<launch>
-    
-    <!-- UI node starts only after the remove_default_turtle node finishes -->
-    <node name="launcher_node" pkg="assignment1_rt" type="part_1.py" output="screen" />
-    
-</launch>
-

@@ -53,6 +53,8 @@ Spawn_turt.request.y=y_pos;
 Spawn_turt.request.theta=theta_;
 Spawn_turt.request.name=turtle_name;
 spawn();
+std::string turtle_velocity_commander = "/" + turtle_name + "/cmd_vel";
+cmd_vel = n->advertise<geometry_msgs::Twist>(turtle_velocity_commander, 10);
 
 }
 
@@ -65,8 +67,11 @@ private:
 turtlesim::Kill   kill_turt ;
 turtlesim::Spawn   Spawn_turt ;
 geometry_msgs::Twist turtle_cmd_vel ;
+ros::Publisher cmd_vel;
 
 void spawn();
+
+
 
 };
 
@@ -105,12 +110,12 @@ void Turtle::kill(){
 
 /*this will move the turle for any amount of time the user chooses */
 void Turtle::move_turtle(_Float32 V_x, _Float32 Theta_dot, int timer) {
-    std::string turtle_velocity_commander = "/" + turtle_name + "/cmd_vel";
+    
 
     // Check if this turtle is allowed to move
     bool is_allowed_to_move = true;
 
-    ros::Publisher cmd_vel = n->advertise<geometry_msgs::Twist>(turtle_velocity_commander, 10);
+
     ros::Time start_time = ros::Time::now();
 
     while (ros::ok()) {
