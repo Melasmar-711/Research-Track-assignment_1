@@ -60,7 +60,7 @@ This project provides a system for managing and controlling turtles in the ROS `
 
 ---
 
-## **System Requirements**
+## **Installation and running**
 - **Dependencies:**
   - ROS (Robot Operating System, Noetic or later)
   - `turtlesim` package
@@ -69,7 +69,14 @@ This project provides a system for managing and controlling turtles in the ROS `
   - `geometry_msgs`
   - `turtlesim`
   
-Ensure the required packages are installed:
-```bash
-sudo apt install ros-noetic-turtlesim
+1. `cd <catkin_worksapce_path/src>`
+2. `git clone https://github.com/Melasmar-711/Research-Track-assignment_1.git`
+3. `cd ..`
+4. `catkin_make`
+5. `roslaunch assignment1_rt Assignmetn1_rt.launch`
+
+
+
+
+
 
