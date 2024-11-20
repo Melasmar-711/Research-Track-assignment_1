@@ -19,13 +19,17 @@ def run_sequential_nodes():
     rospy.loginfo("Removing the default turtle (turtle1)...")
     subprocess.call(['rosservice', 'call', '/kill', 'turtle1'])
 
-    # Start the UI node
-    rospy.loginfo("Starting the UI node...")
-    ui_node_process = subprocess.Popen(['rosrun', 'assignment1_rt', 'UI_node'])
+    # Start the UI node in a new terminal
+    rospy.loginfo("Starting the UI node in a new terminal...")
+    ui_node_process = subprocess.Popen(['gnome-terminal', '--', 'rosrun', 'assignment1_rt', 'UI_node'])
+    
+    
+    # Start the Distance node in a new terminal
+    rospy.loginfo("Starting the Distance node in a new terminal...")
+    ui_node_process = subprocess.Popen(['gnome-terminal', '--', 'rosrun', 'assignment1_rt', 'Distance_node'])
 
     # Wait for processes to complete (optional, you can adjust as needed)
     turtlesim_process.wait()
-    ui_node_process.wait()
 
 if __name__ == '__main__':
     try:
