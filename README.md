@@ -73,7 +73,7 @@ This project provides a system for managing and controlling turtles in the ROS `
 2. `git clone https://github.com/Melasmar-711/Research-Track-assignment_1.git`
 3. `cd ..`
 4. `catkin_make`
-5. `roslaunch assignment1_rt Assignmetn1_rt.launch`
+5. `roslaunch assignment1_rt Assignment1_rt.launch`
 
 
 
