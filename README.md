@@ -62,7 +62,7 @@ This project provides a system for managing and controlling turtles in the ROS `
 
 ## **Installation and running**
 - **Dependencies:**
-  - ROS (Robot Operating System, Noetic or later)
+  - ROS Noetic
   - `turtlesim` package
 
 - **Additional ROS Packages:**
