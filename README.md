@@ -14,6 +14,12 @@ This project provides a system for managing and controlling turtles in the ROS `
 ---
 ![rqt_graph](graph3.png)
 ---
+
+[Watch the video](https://youtu.be/99KRBP6IC40)
+
+
+
+---
 ### **Nodes**
 1. **UI Node**
    - Allows users to interact with turtles through a terminal-based menu.
