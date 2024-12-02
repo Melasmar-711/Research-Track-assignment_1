@@ -15,10 +15,7 @@ This project provides a system for managing and controlling turtles in the ROS `
 ![rqt_graph](graph3.png)
 ---
 
-[Watch the video](https://youtu.be/99KRBP6IC40)
-
-
-
+[![Video Thumbnail](https://img.youtube.com/vi/99KRBP6IC40/0.jpg)](https://www.youtube.com/watch?v=99KRBP6IC40)
 ---
 ### **Nodes**
 1. **UI Node**
