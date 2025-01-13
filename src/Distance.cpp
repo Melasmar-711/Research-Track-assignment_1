@@ -58,6 +58,7 @@ void robot_angle_obstacle(const std_msgs::Float32MultiArray::ConstPtr& msg)
         for (int i = 0; i < 16; i++) {
             if (msg->data[i] < distance_threshold) {
                 robot_obstacle_angles[i] = msg->data[i];
+                n.setParam("/turtle_movement_status/" +turtle_name, false);
             }
         }
 
