@@ -11,7 +11,7 @@ def pub_obstacles():
     rate = rospy.Rate(10) # 10hz
     while not rospy.is_shutdown():
         obstacles = Float32MultiArray()
-        obstacles.data = np.random.rand(16)  # put a range for values
+        obstacles.data = np.random.rand(16)*10  # put a range for values
         pub.publish(obstacles)    
 
 
