@@ -4,29 +4,43 @@
 #include <algorithm>
 #include "ros/ros.h"
 #include "turtlesim/Pose.h"
+#include "std_msgs/Float32MultiArray.h"
 
 // Class to manage each turtle's pose
 class Turtle {
 public:
     ros::NodeHandle n;
     std::string turtle_name;
+
+
+
+    double robot_obstacle_angles[16]={};
     float r[2] = {0.0, 0.0}; // Position vector [x, y]
+
+
 
     Turtle(ros::NodeHandle &nh, const std::string &name) {
         n = nh;
         turtle_name = name;
+        
 
         ROS_ASSERT(!name.empty()); // Assert to ensure name is not empty
         std::string topic = "/" + turtle_name + "/pose";
         pose_subscriber = n.subscribe(topic, 10, &Turtle::pose_callback, this);
+        robot_obstacle_angles_sub = n.subscribe("/obstacles", 10, &Turtle::robot_angle_obstacle, this);
+
         ROS_INFO("Subscribed to %s", topic.c_str());
         n.setParam("/turtle_movement_status/" + turtle_name, true); // Initialize movement status
     }
+
+
 
     // Callback to update turtle's position
     void pose_callback(const turtlesim::Pose::ConstPtr &msg) {
         r[0] = msg->x; // Update x-coordinate
         r[1] = msg->y; // Update y-coordinate
+
+
 
 
         if (r[0]>10 || r[0] <1 ||r[1]>10||r[1]<1)
@@ -37,8 +51,22 @@ public:
         ROS_INFO(" i am turtle %s my x:%f  y :%f", turtle_name.c_str(),r[0],r[1]);
     }
 
+    // Callback to update turtle's position
+    void robot_angle_obstacle(std_msgs::Float32MultiArray msg) {
+        float distance_threshold = 1.0; // Minimum allowed distance between turtles
+        for (int i = 0; i < 16; i++) {
+            if (msg.data[i] < distance_threshold) {
+                robot_obstacle_angles[i] = msg.data[i];
+            }
+        }
+
+        
+    }
+
+
 private:
     ros::Subscriber pose_subscriber;
+    ros::Subscriber robot_obstacle_angles_sub;
 };
 
 // Helper function to calculate Euclidean distance between two turtles
@@ -51,6 +79,8 @@ int main(int argc, char **argv) {
 
     ros::NodeHandle nh;
     ros::Rate loop_rate(10);
+    ros::Publisher obstacle_publisher = nh.advertise<std_msgs::Float32MultiArray>("/obstacles", 10);
+    float robot_obstacle_angles[16]={2,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 
     std::vector<Turtle*> turtles; // Vector of pointers to dynamically manage memory
     std::vector<std::string> previous_turtle_names;
@@ -112,6 +142,8 @@ int main(int argc, char **argv) {
 }
 
 
+    // Publish the robot_obstacle_angles
+        obstacle_publisher.publish(robot_obstacle_angles);
 
         ros::spinOnce();
         loop_rate.sleep();
